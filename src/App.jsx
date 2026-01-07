@@ -1,9 +1,10 @@
 import Header from "./Componenets/Header"
+import Footer from "./Componenets/Footer"
 import Home from "./pages/Home"
 import About from "./pages/About"
 import Services from "./pages/Services"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
+import Login from "./Componenets/Login"
+import Register from "./Componenets/Register"
 import AdminDashboard from "./Componenets/AdminDashboard"
 import DashboardPage from "./Componenets/DashboardPage"
 import BillDetailsPage from "./Componenets/BillDetailsPage"
@@ -16,6 +17,7 @@ function App () {
   return (
     <>
       <Header />
+      
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -32,6 +34,8 @@ function App () {
         <Route path="/billdetails" element={<BillDetailsPage />} />
         <Route path="/payment-history" element={<PaymentHistoryPage />} />
       </Routes>
+
+      <Footer />
     </>
   )
 }

@@ -9,9 +9,9 @@ function Header() {
   return (
     <>
       <div
-        className="
-          bg-blue-100 shadow-2xl font-sans
-          px-3 py-4
+        className=" bg-white shadow-lg sticky top-0
+           font-sans
+          px-3 py-6
           sm:px-5
           md:px-8
           lg:px-14
@@ -28,28 +28,30 @@ function Header() {
 
           <button
             onClick={() => setOpen(!open)}
-            className="sm:hidden"
+            className="sm:hidden bg-white shadow-lg z-50 "
           >
             {open ? <X size={28} /> : <Menu size={28} />}
           </button>
 
-          <ul
-            className={`
-              absolute left-0 w-full bg-blue-100 px-6 py-6
-              flex flex-col gap-4 text-sm
-              transition-all duration-300
+      <ul
+  className={`
+    absolute left-0 w-full px-6 py-6 
+    flex flex-col gap-4 text-sm
+    transition-all duration-300
 
-              ${open ? "top-20" : "-top-96"}
+    ${open ? "top-20 bg-white shadow-lg z-50" : "-top-96"}
 
-              sm:static sm:w-auto sm:flex-row sm:items-center
-              sm:gap-5 sm:p-0 sm:text-base
-              md:gap-7
-              lg:gap-10
-            `}
-          >
+    sm:static sm:w-auto sm:flex-row sm:items-center
+    sm:gap-5 sm:p-0 sm:text-base
+    sm:bg-transparent sm:shadow-none
+    md:gap-7
+    lg:gap-10
+  `}
+>
+
             <Link to="/"><li className="hover:text-blue-600">Home</li></Link>
             <Link to="/about"><li className="hover:text-blue-600">About</li></Link>
-            <Link to="/services"><li className="hover:text-blue-600">Services</li></Link>
+            <Link to="/services"><li className="hover:text-blue-600 lg:mr-[250px]">Services</li></Link>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 md:gap-5">
               <button className="bg-white shadow px-5 py-2 rounded-2xl">
