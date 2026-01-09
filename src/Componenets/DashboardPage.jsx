@@ -231,12 +231,12 @@ function DashboardPage() {
                                         </div>
                                         <div>
                                             <p className="text-white/50 text-xs font-bold uppercase mb-1">Billing Period</p>
-                                            <p className="font-semibold">Jan 2026</p>
+                                            <p className="font-semibold">{new Date().toLocaleString('default', { month: 'short', year: 'numeric' })}</p>
                                         </div>
                                         <div>
                                             <p className="text-white/50 text-xs font-bold uppercase mb-1">Due Date</p>
                                             <p className={`font-bold ${user?.paymentStatus === 'Paid' ? 'text-emerald-300' : 'text-orange-300'}`}>
-                                                {user?.due || '10 Jan 2026'}
+                                                {user?.due || `${new Date(new Date().getFullYear(), new Date().getMonth(), 10).getDate()} ${new Date().toLocaleString('default', { month: 'short' })} ${new Date().getFullYear()}`}
                                             </p>
                                         </div>
                                     </div>
