@@ -16,7 +16,6 @@ export default function Register() {
         setError("");
         setLoading(true);
 
-        // Simple validation
         if (password.length < 6) {
             setError("Password must be at least 6 characters long.");
             setLoading(false);
@@ -26,7 +25,7 @@ export default function Register() {
         const success = register(name, email, password);
 
         if (success) {
-            // Registration success, AuthContext handles auto-login and session
+  
             navigate("/dashboard");
         } else {
             setError("Email already exists. Please try a different email or login.");
@@ -44,7 +43,7 @@ export default function Register() {
 
                 {error && (
                     <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-700 animate-in fade-in slide-in-from-top-2">
-                        <span className="text-xl">⚠️</span>
+                        <span className="text-xl"></span>
                         <p className="text-sm font-bold">{error}</p>
                     </div>
                 )}
@@ -56,7 +55,7 @@ export default function Register() {
                             <input
                                 type="text"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
-                                placeholder="John Doe"
+                                 placeholder="Magacaga gali "
                                 required
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -70,7 +69,7 @@ export default function Register() {
                             <input
                                 type="email"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
-                                placeholder="john@example.com"
+                               placeholder="Email kaga gali "
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -84,7 +83,7 @@ export default function Register() {
                             <input
                                 type="password"
                                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
-                                placeholder="••••••••"
+                                placeholder="passward kaga gali "
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}

@@ -78,7 +78,7 @@ function AdminDashboard() {
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-white tracking-wide">ADMIN</h2>
-                                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Portal v2.0</p>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Portal</p>
                             </div>
                         </div>
                         <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-500">
