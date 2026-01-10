@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fa';
 
 function DashboardPage() {
-    const { user, logout, AVAILABLE_PACKAGES, selectPackage } = useAuth();
+    const { user, logout, packages, selectPackage } = useAuth();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState('dashboard');
@@ -146,7 +146,7 @@ function DashboardPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {AVAILABLE_PACKAGES.map((pkg) => (
+                                {packages.map((pkg) => (
                                     <div
                                         key={pkg.id}
                                         className="group relative bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col"

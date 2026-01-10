@@ -10,19 +10,42 @@ import {
     FaBars,
     FaSignOutAlt,
     FaUsers,
-    FaTrash
+    FaTrash,
+    FaBox,
+    FaEdit,
+    FaPlus
 } from 'react-icons/fa';
 
-
-
-
 function AdminDashboard() {
-    const { user, logout, getAllUsers, deleteUser } = useAuth();
+    const {
+        user, logout, getAllUsers, deleteUser,
+        packages, addPackage, updatePackage, deletePackage,
+        extraServices, addExtraService, updateExtraService, deleteExtraService
+    } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('history');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
     const [users, setUsers] = useState([]);
+
+    // Package Form State
+    const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
+    const [editingPackage, setEditingPackage] = useState(null);
+    const [packageForm, setPackageForm] = useState({
+        name: '',
+        price: '',
+        speed: '',
+        features: '',
+        popular: false
+    });
+
+    // Extra Service Form State
+    const [isExtraModalOpen, setIsExtraModalOpen] = useState(false);
+    const [editingExtra, setEditingExtra] = useState(null);
+    const [extraForm, setExtraForm] = useState({
+        name: '',
+        description: '',
+        price: ''
+    });
 
     React.useEffect(() => {
         setUsers(getAllUsers());
@@ -41,16 +64,88 @@ function AdminDashboard() {
         { id: 'history', label: 'Payment Monitoring', icon: <FaHistory /> },
         { id: 'reports', label: 'Monthly Reports', icon: <FaClipboardList /> },
         { id: 'users', label: 'Customer Management', icon: <FaUsers /> },
+        { id: 'packages', label: 'Manage Packages', icon: <FaBox /> },
     ];
 
     const handleDeleteUser = (userId) => {
         if (window.confirm("Are you sure you want to delete this customer? This action cannot be undone.")) {
             deleteUser(userId);
-            setUsers(getAllUsers()); 
+            setUsers(getAllUsers());
         }
     };
 
+    const handleOpenPackageModal = (pkg = null) => {
+        if (pkg) {
+            setEditingPackage(pkg);
+            setPackageForm({
+                ...pkg,
+                features: pkg.features.join(', ')
+            });
+        } else {
+            setEditingPackage(null);
+            setPackageForm({
+                name: '',
+                price: '',
+                speed: '',
+                features: '',
+                popular: false
+            });
+        }
+        setIsPackageModalOpen(true);
+    };
 
+    const handleSavePackage = (e) => {
+        e.preventDefault();
+        const pkgData = {
+            ...packageForm,
+            price: parseFloat(packageForm.price),
+            features: packageForm.features.split(',').map(f => f.trim()).filter(f => f !== '')
+        };
+
+        if (editingPackage) {
+            updatePackage({ ...pkgData, id: editingPackage.id });
+        } else {
+            addPackage(pkgData);
+        }
+        setIsPackageModalOpen(false);
+    };
+
+    const handleDeletePackage = (id) => {
+        if (window.confirm("Are you sure you want to delete this package?")) {
+            deletePackage(id);
+        }
+    };
+
+    const handleOpenExtraModal = (svc = null) => {
+        if (svc) {
+            setEditingExtra(svc);
+            setExtraForm(svc);
+        } else {
+            setEditingExtra(null);
+            setExtraForm({
+                name: '',
+                description: '',
+                price: ''
+            });
+        }
+        setIsExtraModalOpen(true);
+    };
+
+    const handleSaveExtra = (e) => {
+        e.preventDefault();
+        if (editingExtra) {
+            updateExtraService({ ...extraForm, id: editingExtra.id });
+        } else {
+            addExtraService(extraForm);
+        }
+        setIsExtraModalOpen(false);
+    };
+
+    const handleDeleteExtra = (id) => {
+        if (window.confirm("Are you sure you want to delete this service?")) {
+            deleteExtraService(id);
+        }
+    };
 
     if (!user || user.role !== 'admin') {
         return <div className="p-10 text-center">Access Denied</div>;
@@ -327,8 +422,234 @@ function AdminDashboard() {
                         </div>
                     )}
 
+                    {activeTab === 'packages' && (
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-slate-800">Internet Packages</h2>
+                                <button
+                                    onClick={() => handleOpenPackageModal()}
+                                    className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30"
+                                >
+                                    <FaPlus /> Add New Package
+                                </button>
+                            </div>
 
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {packages.map((pkg) => (
+                                    <div key={pkg.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative">
+                                        {pkg.popular && (
+                                            <span className="absolute top-4 right-4 bg-indigo-100 text-indigo-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+                                                Popular
+                                            </span>
+                                        )}
+                                        <h3 className="text-lg font-bold text-slate-800 mb-1">{pkg.name}</h3>
+                                        <p className="text-3xl font-extrabold text-indigo-600 mb-4">
+                                            ${pkg.price}<span className="text-sm text-slate-400 font-normal">/mo</span>
+                                        </p>
+                                        <div className="space-y-2 mb-6 text-sm text-slate-600">
+                                            <p className="font-bold flex items-center justify-between">
+                                                Speed <span>{pkg.speed}</span>
+                                            </p>
+                                            <div className="border-t border-slate-100 pt-2">
+                                                <p className="text-xs text-slate-400 mb-2 uppercase tracking-widest font-bold">Features</p>
+                                                <ul className="space-y-1">
+                                                    {pkg.features.map((f, i) => (
+                                                        <li key={i} className="flex items-center gap-2">
+                                                            <div className="w-1 h-1 bg-indigo-500 rounded-full"></div>
+                                                            {f}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleOpenPackageModal(pkg)}
+                                                className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-200 transition text-sm font-bold"
+                                            >
+                                                <FaEdit /> Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeletePackage(pkg.id)}
+                                                className="flex items-center justify-center bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition text-sm"
+                                            >
+                                                <FaTrash />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
 
+                            <div className="pt-10">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl font-bold text-slate-800">Additional Services</h2>
+                                    <button
+                                        onClick={() => handleOpenExtraModal()}
+                                        className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 transition shadow-lg"
+                                    >
+                                        <FaPlus /> Add Service
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {extraServices.map((svc) => (
+                                        <div key={svc.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                            <h3 className="text-lg font-bold text-slate-800 mb-1">{svc.name}</h3>
+                                            <p className="text-sm text-slate-500 mb-4">{svc.description}</p>
+                                            <p className="font-bold text-slate-800 mb-6">{svc.price}</p>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleOpenExtraModal(svc)}
+                                                    className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-200 transition text-sm font-bold"
+                                                >
+                                                    <FaEdit /> Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteExtra(svc.id)}
+                                                    className="flex items-center justify-center bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition text-sm"
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Package Modal */}
+                    {isPackageModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden">
+                                <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 className="text-xl font-bold text-slate-800">
+                                        {editingPackage ? 'Edit Package' : 'Add New Package'}
+                                    </h3>
+                                    <button onClick={() => setIsPackageModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <form onSubmit={handleSavePackage} className="p-8 space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Package Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={packageForm.name}
+                                            onChange={(e) => setPackageForm({ ...packageForm, name: e.target.value })}
+                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                                            placeholder="e.g. Fiber 20Mbps"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Price ($)</label>
+                                            <input
+                                                type="number"
+                                                required
+                                                value={packageForm.price}
+                                                onChange={(e) => setPackageForm({ ...packageForm, price: e.target.value })}
+                                                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                                                placeholder="25.00"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Speed</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={packageForm.speed}
+                                                onChange={(e) => setPackageForm({ ...packageForm, speed: e.target.value })}
+                                                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                                                placeholder="20 Mbps"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Features (comma separated)</label>
+                                        <textarea
+                                            value={packageForm.features}
+                                            onChange={(e) => setPackageForm({ ...packageForm, features: e.target.value })}
+                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-24 resize-none"
+                                            placeholder="Unlimited Data, Free Router, 24/7 Support"
+                                        ></textarea>
+                                    </div>
+                                    <div className="flex items-center gap-2 py-2">
+                                        <input
+                                            type="checkbox"
+                                            id="popular"
+                                            checked={packageForm.popular}
+                                            onChange={(e) => setPackageForm({ ...packageForm, popular: e.target.checked })}
+                                            className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                        />
+                                        <label htmlFor="popular" className="text-sm font-medium text-slate-700">Mark as Popular</label>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30 mt-4"
+                                    >
+                                        {editingPackage ? 'Update Package' : 'Create Package'}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Extra Service Modal */}
+                    {isExtraModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden">
+                                <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 className="text-xl font-bold text-slate-800">
+                                        {editingExtra ? 'Edit Service' : 'Add New Service'}
+                                    </h3>
+                                    <button onClick={() => setIsExtraModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                                <form onSubmit={handleSaveExtra} className="p-8 space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Service Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={extraForm.name}
+                                            onChange={(e) => setExtraForm({ ...extraForm, name: e.target.value })}
+                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                                            placeholder="e.g. Installation"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Description</label>
+                                        <textarea
+                                            required
+                                            value={extraForm.description}
+                                            onChange={(e) => setExtraForm({ ...extraForm, description: e.target.value })}
+                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-20 resize-none"
+                                            placeholder="Professional installation..."
+                                        ></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Price Label</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={extraForm.price}
+                                            onChange={(e) => setExtraForm({ ...extraForm, price: e.target.value })}
+                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                                            placeholder="e.g. $50 (one-time)"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition shadow-lg mt-4"
+                                    >
+                                        {editingExtra ? 'Update Service' : 'Create Service'}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
 
 
                 </div>

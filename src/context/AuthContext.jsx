@@ -8,13 +8,58 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [packages, setPackages] = useState(() => {
+    const storedPackages = localStorage.getItem('internetPayPackages');
+    return storedPackages ? JSON.parse(storedPackages) : [
+      { id: 'p1', name: 'Basic 10Mbps', price: 15.00, speed: '10 Mbps', features: ['Unlimited Data', 'Email Support', '1 Device'] },
+      { id: 'p2', name: 'Fiber 20Mbps', price: 25.00, speed: '20 Mbps', features: ['Unlimited Data', 'Priority Support', '3 Devices', 'Free Router'], popular: true },
+      { id: 'p3', name: 'Premium 50Mbps', price: 45.00, speed: '50 Mbps', features: ['Unlimited Data', '24/7 Support', '5 Devices', 'Free Router', 'Static IP'] },
+      { id: 'p4', name: 'Business 100Mbps', price: 85.00, speed: '100 Mbps', features: ['Unlimited Data', 'Dedicated Support', 'Unlimited Devices', 'Free Equipment', 'Static IP', 'SLA Guarantee'] },
+    ];
+  });
 
-  const AVAILABLE_PACKAGES = [
-    { id: 'p1', name: 'Fiber 20Mbps', price: 25.00, speed: '20 Mbps', features: ['Unlimited Data', 'Free Installation', '24/7 Support'] },
-    { id: 'p2', name: 'Fiber 40Mbps', price: 35.00, speed: '40 Mbps', features: ['Unlimited Data', 'Ultra HD Streaming', 'Priority Support'] },
-    { id: 'p3', name: 'Fiber 60Mbps', price: 50.00, speed: '60 Mbps', features: ['Unlimited Data', 'Gaming Optimized', 'Static IP Included'] },
-    { id: 'p4', name: 'Fiber 100Mbps', price: 75.00, speed: '100 Mbps', features: ['Unlimited Data', 'Business Grade', 'Concierge Service'] },
-  ];
+  useEffect(() => {
+    localStorage.setItem('internetPayPackages', JSON.stringify(packages));
+  }, [packages]);
+
+  const addPackage = (pkg) => {
+    const newPkg = { ...pkg, id: Date.now().toString() };
+    setPackages([...packages, newPkg]);
+  };
+
+  const updatePackage = (updatedPkg) => {
+    setPackages(packages.map(p => p.id === updatedPkg.id ? updatedPkg : p));
+  };
+
+  const deletePackage = (id) => {
+    setPackages(packages.filter(p => p.id !== id));
+  };
+
+  const [extraServices, setExtraServices] = useState(() => {
+    const storedExtra = localStorage.getItem('internetPayExtraServices');
+    return storedExtra ? JSON.parse(storedExtra) : [
+      { id: 'e1', name: 'Installation', description: 'Professional installation within 24–48 hours', price: '$50 (one-time)' },
+      { id: 'e2', name: 'Equipment Rental', description: 'Latest router models available', price: '$5/month' },
+      { id: 'e3', name: 'Technical Support', description: 'On-site support when you need it', price: '$30/visit' },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('internetPayExtraServices', JSON.stringify(extraServices));
+  }, [extraServices]);
+
+  const addExtraService = (svc) => {
+    const newSvc = { ...svc, id: Date.now().toString() };
+    setExtraServices([...extraServices, newSvc]);
+  };
+
+  const updateExtraService = (updatedSvc) => {
+    setExtraServices(extraServices.map(s => s.id === updatedSvc.id ? updatedSvc : s));
+  };
+
+  const deleteExtraService = (id) => {
+    setExtraServices(extraServices.filter(s => s.id !== id));
+  };
 
   useEffect(() => {
     // Check local storage for persisted session
@@ -180,7 +225,14 @@ export const AuthProvider = ({ children }) => {
     register,
     markAsPaid,
     selectPackage,
-    AVAILABLE_PACKAGES,
+    packages,
+    addPackage,
+    updatePackage,
+    deletePackage,
+    extraServices,
+    addExtraService,
+    updateExtraService,
+    deleteExtraService,
     getAllUsers,
     updateUserBill,
     deleteUser

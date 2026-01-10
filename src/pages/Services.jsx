@@ -1,7 +1,10 @@
 import { Wifi, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Services() {
+  const { packages, extraServices } = useAuth();
+
   return (
     <div className="bg-gray-50 min-h-screen px-4 md:px-6 py-16">
 
@@ -16,88 +19,39 @@ function Services() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-20">
+        {packages.map((pkg) => (
+          <div
+            key={pkg.id}
+            className={`bg-white rounded-xl p-6 shadow-sm border ${pkg.popular ? "border-blue-600 ring-2 ring-blue-500" : "border-gray-200"
+              }`}
+          >
+            {pkg.popular && (
+              <span className="inline-block mb-4 text-xs bg-blue-600 text-white px-3 py-1 rounded-full">
+                Most Popular
+              </span>
+            )}
+            <h3 className="text-lg font-semibold">{pkg.name}</h3>
+            <p className="text-3xl font-bold mt-2">${pkg.price}<span className="text-sm text-gray-500">/month</span></p>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold">Basic 10Mbps</h3>
-          <p className="text-3xl font-bold mt-2">$15<span className="text-sm text-gray-500">/month</span></p>
+            <ul className="mt-6 space-y-3 text-sm">
+              <li className="flex gap-2"><Check className="text-green-500" size={16} />{pkg.speed} Speed</li>
+              {pkg.features.map((feature, index) => (
+                <li key={index} className="flex gap-2">
+                  <Check className="text-green-500" size={16} />{feature}
+                </li>
+              ))}
+            </ul>
 
-          <ul className="mt-6 space-y-3 text-sm">
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />10Mbps Speed</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Unlimited Data</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Email Support</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />1 Device</li>
-          </ul>
-
-
-          <button className="mt-6 w-full py-3 rounded-lg border hover:bg-gray-100">
-            Get Started
-          </button>
-
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-blue-600 ring-2 ring-blue-500">
-          <span className="inline-block mb-4 text-xs bg-blue-600 text-white px-3 py-1 rounded-full">
-            Most Popular
-          </span>
-
-          <h3 className="text-lg font-semibold">Fiber 20Mbps</h3>
-          <p className="text-3xl font-bold mt-2">$25<span className="text-sm text-gray-500">/month</span></p>
-
-          <ul className="mt-6 space-y-3 text-sm">
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />20Mbps Speed</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Unlimited Data</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Priority Support</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />3 Devices</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Free Router</li>
-          </ul>
-
-          <Link to="/register">
-            <button className="mt-6 w-full py-3 rounded-lg bg-black text-white hover:bg-gray-800">
-              Get Started
-            </button>
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold">Premium 50Mbps</h3>
-          <p className="text-3xl font-bold mt-2">$45<span className="text-sm text-gray-500">/month</span></p>
-
-          <ul className="mt-6 space-y-3 text-sm">
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />50Mbps Speed</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Unlimited Data</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />24/7 Support</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />5 Devices</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Free Router</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Static IP</li>
-          </ul>
-
-          <Link to="/register">
-            <button className="mt-6 w-full py-3 rounded-lg border hover:bg-gray-100">
-              Get Started
-            </button>
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold">Business 100Mbps</h3>
-          <p className="text-3xl font-bold mt-2">$85<span className="text-sm text-gray-500">/month</span></p>
-
-          <ul className="mt-6 space-y-3 text-sm">
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />100Mbps Speed</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Unlimited Data</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Dedicated Support</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Unlimited Devices</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Free Equipment</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />Static IP</li>
-            <li className="flex gap-2"><Check className="text-green-500" size={16} />SLA Guarantee</li>
-          </ul>
-
-          <Link to="/register">
-            <button className="mt-6 w-full py-3 rounded-lg border hover:bg-gray-100">
-              Get Started
-            </button>
-          </Link>
-        </div>
+            <Link to="/register">
+              <button
+                className={`mt-6 w-full py-3 rounded-lg border hover:bg-gray-100 ${pkg.popular ? "bg-black text-white hover:bg-gray-800" : ""
+                  }`}
+              >
+                Get Started
+              </button>
+            </Link>
+          </div>
+        ))}
       </div>
 
       <div className="max-w-7xl mx-auto mb-20">
@@ -108,60 +62,51 @@ function Services() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3 text-left">Feature</th>
-                <th>Basic</th>
-                <th>Fiber</th>
-                <th>Premium</th>
-                <th>Business</th>
+                {packages.map(pkg => (
+                  <th key={pkg.id}>{pkg.name.split(' ')[0]}</th>
+                ))}
               </tr>
             </thead>
 
             <tbody>
               <tr className="border-t">
                 <td className="p-3 text-left font-medium">Speed</td>
-                <td>10Mbps</td>
-                <td>20Mbps</td>
-                <td>50Mbps</td>
-                <td>100Mbps</td>
+                {packages.map(pkg => (
+                  <td key={pkg.id}>{pkg.speed}</td>
+                ))}
               </tr>
 
               <tr className="border-t">
-                <td className="p-3 text-left font-medium">Data Limit</td>
-                <td>Unlimited</td>
-                <td>Unlimited</td>
-                <td>Unlimited</td>
-                <td>Unlimited</td>
-              </tr>
-
-              <tr className="border-t">
-                <td className="p-3 text-left font-medium">Devices</td>
-                <td>1</td>
-                <td>3</td>
-                <td>5</td>
-                <td>Unlimited</td>
-              </tr>
-
-              <tr className="border-t">
-                <td className="p-3 text-left font-medium">Router</td>
-                <td><X className="text-red-500 mx-auto" /></td>
-                <td><Check className="text-green-500 mx-auto" /></td>
-                <td><Check className="text-green-500 mx-auto" /></td>
-                <td><Check className="text-green-500 mx-auto" /></td>
+                <td className="p-3 text-left font-medium">Monthly Price</td>
+                {packages.map(pkg => (
+                  <td key={pkg.id}>${pkg.price}</td>
+                ))}
               </tr>
 
               <tr className="border-t">
                 <td className="p-3 text-left font-medium">Support</td>
-                <td>Email</td>
-                <td>Priority</td>
-                <td>24/7</td>
-                <td>Dedicated</td>
+                {packages.map(pkg => (
+                  <td key={pkg.id}>
+                    {pkg.features.some(f => f.toLowerCase().includes('support')) ? (
+                      <Check className="text-green-500 mx-auto" />
+                    ) : (
+                      <X className="text-red-500 mx-auto" />
+                    )}
+                  </td>
+                ))}
               </tr>
 
               <tr className="border-t">
                 <td className="p-3 text-left font-medium">Static IP</td>
-                <td><X className="text-red-500 mx-auto" /></td>
-                <td><X className="text-red-500 mx-auto" /></td>
-                <td><Check className="text-green-500 mx-auto" /></td>
-                <td><Check className="text-green-500 mx-auto" /></td>
+                {packages.map(pkg => (
+                  <td key={pkg.id}>
+                    {pkg.features.some(f => f.toLowerCase().includes('static ip')) ? (
+                      <Check className="text-green-500 mx-auto" />
+                    ) : (
+                      <X className="text-red-500 mx-auto" />
+                    )}
+                  </td>
+                ))}
               </tr>
             </tbody>
 
@@ -175,29 +120,15 @@ function Services() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="font-semibold mb-2">Installation</h3>
-            <p className="text-gray-600 text-sm mb-3">
-              Professional installation within 24–48 hours
-            </p>
-            <p className="font-bold">$50 (one-time)</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="font-semibold mb-2">Equipment Rental</h3>
-            <p className="text-gray-600 text-sm mb-3">
-              Latest router models available
-            </p>
-            <p className="font-bold">$5/month</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <h3 className="font-semibold mb-2">Technical Support</h3>
-            <p className="text-gray-600 text-sm mb-3">
-              On-site support when you need it
-            </p>
-            <p className="font-bold">$30/visit</p>
-          </div>
+          {extraServices.map((svc) => (
+            <div key={svc.id} className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="font-semibold mb-2">{svc.name}</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                {svc.description}
+              </p>
+              <p className="font-bold">{svc.price}</p>
+            </div>
+          ))}
         </div>
       </div>
 
