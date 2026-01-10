@@ -32,8 +32,6 @@ export default function AdminLogin() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-slate-200">
 
-                <div className="flex justify-center mb-4 text-indigo-600 text-4xl">🔐</div>
-
                 <h2 className="text-2xl font-semibold text-center text-slate-800">Admin Portal</h2>
                 <p className="text-slate-500 text-center text-sm mt-1">
                     Authorized personnel only

@@ -32,8 +32,6 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8">
 
-                <div className="flex justify-center mb-4 text-blue-600 text-4xl">📶</div>
-
                 <h2 className="text-2xl font-semibold text-center">Welcome Back</h2>
                 <p className="text-gray-500 text-center text-sm mt-1">
                     Login to manage your internet bill payments

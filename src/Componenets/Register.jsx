@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaUser, FaEnvelope, FaLock, FaWifi } from "react-icons/fa";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -39,9 +38,6 @@ export default function Register() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
             <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 md:p-10 border border-gray-100">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl text-white text-2xl mb-6 shadow-lg shadow-blue-500/30">
-                        <FaWifi />
-                    </div>
                     <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Create Account</h2>
                     <p className="text-gray-500 font-medium mt-2">Join InternetPay to manage your bills</p>
                 </div>
@@ -57,10 +53,9 @@ export default function Register() {
                     <div>
                         <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Full Name</label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><FaUser /></span>
                             <input
                                 type="text"
-                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-12 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
                                 placeholder="John Doe"
                                 required
                                 value={name}
@@ -72,10 +67,9 @@ export default function Register() {
                     <div>
                         <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Email Address</label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><FaEnvelope /></span>
                             <input
                                 type="email"
-                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-12 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
                                 placeholder="john@example.com"
                                 required
                                 value={email}
@@ -87,10 +81,9 @@ export default function Register() {
                     <div>
                         <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Create Password</label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><FaLock /></span>
                             <input
                                 type="password"
-                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-12 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-gray-900 font-medium"
                                 placeholder="••••••••"
                                 required
                                 value={password}
