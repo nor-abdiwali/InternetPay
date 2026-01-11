@@ -13,7 +13,6 @@ export default function AdminLogin() {
         e.preventDefault();
         setError("");
 
-        // Only allow admin credentials
         if (email !== 'admin@test.com') {
             setError("This is not allowed for you. Admin access only.");
             return;
@@ -39,7 +38,7 @@ export default function AdminLogin() {
 
                 {error && (
                     <div className="mt-6 w-full min-h-[60px] bg-red-50 border-2 border-red-200 text-red-700 rounded-xl shadow-lg shadow-red-100 flex items-center justify-center px-4 py-3 gap-3">
-                        <span className="text-xl bg-red-100 w-8 h-8 flex items-center justify-center rounded-full">⚠️</span>
+                        <span className="text-xl bg-red-100 w-8 h-8 flex items-center justify-center rounded-full"></span>
                         <p className="font-bold text-sm leading-tight text-center">
                             {error}
                         </p>
@@ -70,7 +69,7 @@ export default function AdminLogin() {
                 </form>
 
                 <p className="text-center text-xs mt-6 text-slate-400">
-                    Admin credentials required • No registration available
+                    Aqoonsiga maamulaha ayaa loo baahan yahay • Is-diiwaangelin lama heli karo.
                 </p>
             </div>
         </div>

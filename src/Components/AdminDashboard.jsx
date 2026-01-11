@@ -5,8 +5,8 @@ import {
     FaChartLine,
     FaHistory,
     FaTimes,
-    FaDownload,
     FaClipboardList,
+    FaSearch,
     FaBars,
     FaSignOutAlt,
     FaUsers,
@@ -25,7 +25,10 @@ function AdminDashboard() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('history');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     const [users, setUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+
 
     // Package Form State
     const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
@@ -59,6 +62,8 @@ function AdminDashboard() {
         logout();
         navigate('/');
     };
+
+
 
     const menuItems = [
         { id: 'history', label: 'Payment Monitoring', icon: <FaHistory /> },
@@ -167,15 +172,15 @@ function AdminDashboard() {
       `}>
                 <div className="h-full flex flex-col">
                     <div className="p-8 flex items-center justify-between border-b border-white/5">
-                        <div className="flex items-center gap-3">
+                        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                             <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-lg shadow-lg shadow-indigo-500/50">
                                 <FaChartLine />
                             </div>
                             <div>
                                 <h2 className="text-lg font-bold text-white tracking-wide">ADMIN</h2>
-                                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Portal v2.0</p>
+                                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Portal</p>
                             </div>
-                        </div>
+                        </Link>
                         <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-slate-500">
                             <FaTimes />
                         </button>
@@ -250,8 +255,17 @@ function AdminDashboard() {
 
                     {activeTab === 'history' && (
                         <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
-                            <div className="p-8 border-b border-slate-100">
+                            <div className="p-8 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <h2 className="text-xl font-bold text-slate-800">Payment Monitoring</h2>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search transactions..."
+                                        className="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-full md:w-64"
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
+                                </div>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
@@ -265,15 +279,29 @@ function AdminDashboard() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
-                                        {history.map((h) => (
-                                            <tr key={h.id} className="hover:bg-slate-50 transition">
-                                                <td className="p-6 font-mono text-xs text-slate-500">{h.id}</td>
-                                                <td className="p-6 font-bold text-slate-800 text-sm">{h.user}</td>
-                                                <td className="p-6 font-bold text-emerald-600">{h.amount}</td>
-                                                <td className="p-6 text-slate-500 text-sm">{h.date}</td>
-                                                <td className="p-6 text-slate-600 text-sm">{h.method}</td>
-                                            </tr>
-                                        ))}
+                                        {history
+                                            .filter(h =>
+                                                h.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                h.id.toLowerCase().includes(searchTerm.toLowerCase())
+                                            )
+                                            .map((h) => (
+                                                <tr key={h.id} className="hover:bg-slate-50 transition">
+                                                    <td className="p-6 font-mono text-xs text-slate-500">
+                                                        <span className="bg-slate-100 px-2 py-1 rounded text-slate-600">{h.id}</span>
+                                                    </td>
+                                                    <td className="p-6">
+                                                        <p className="font-bold text-slate-800 text-sm">{h.user}</p>
+                                                        <p className="text-[10px] text-slate-400 font-medium">Customer ID: {h.userId}</p>
+                                                    </td>
+                                                    <td className="p-6 font-bold text-emerald-600">
+                                                        {h.amount}
+                                                    </td>
+                                                    <td className="p-6 text-slate-500 text-sm">{h.date}</td>
+                                                    <td className="p-6">
+                                                        <span className="text-slate-600 text-sm bg-slate-50 px-3 py-1 rounded-full border border-slate-100">{h.method}</span>
+                                                    </td>
+                                                </tr>
+                                            ))}
                                         {history.length === 0 && (
                                             <tr><td colSpan="5" className="p-8 text-center text-slate-400">No transactions found.</td></tr>
                                         )}
@@ -326,7 +354,8 @@ function AdminDashboard() {
                                                         {u.status}
                                                     </span>
                                                 </td>
-                                                <td className="p-6 text-right">
+                                                <td className="p-6 text-right flex justify-end gap-2">
+
                                                     <button
                                                         onClick={() => handleDeleteUser(u.id)}
                                                         className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
@@ -346,16 +375,148 @@ function AdminDashboard() {
                         </div>
                     )}
 
+                    {activeTab === 'packages' && (
+                        <div className="space-y-10">
+                            {/* Internet Packages Section */}
+                            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                                <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-xl font-bold text-slate-800">Internet Packages</h2>
+                                        <p className="text-slate-500 text-sm">Configure your core service offerings</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleOpenPackageModal()}
+                                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl transition shadow-lg shadow-indigo-200 text-sm font-bold"
+                                    >
+                                        <FaPlus /> Add Package
+                                    </button>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-slate-50 border-b border-slate-100">
+                                            <tr>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Package Name</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Price</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Speed</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Status</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {packages.map((pkg) => (
+                                                <tr key={pkg.id} className="hover:bg-slate-50 transition">
+                                                    <td className="p-6">
+                                                        <p className="font-bold text-slate-800 text-sm">{pkg.name}</p>
+                                                        <div className="flex flex-wrap gap-1 mt-1">
+                                                            {pkg.features.slice(0, 3).map((f, i) => (
+                                                                <span key={i} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{f}</span>
+                                                            ))}
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-6 font-bold text-slate-900">${pkg.price}</td>
+                                                    <td className="p-6 text-slate-500 text-sm">{pkg.speed}</td>
+                                                    <td className="p-6">
+                                                        {pkg.popular ? (
+                                                            <span className="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-1 rounded-full border border-amber-100 uppercase tracking-wider">Popular</span>
+                                                        ) : (
+                                                            <span className="text-slate-300 text-[10px] uppercase font-bold tracking-wider">Standard</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-6 text-right flex justify-end gap-2">
+                                                        <button onClick={() => handleOpenPackageModal(pkg)} className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"><FaEdit /></button>
+                                                        <button onClick={() => handleDeletePackage(pkg.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><FaTrash /></button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Extra Services Section */}
+                            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                                <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-xl font-bold text-slate-800">Add-on Services</h2>
+                                        <p className="text-slate-500 text-sm">Manage installation, rental and support fees</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleOpenExtraModal()}
+                                        className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl transition shadow-lg shadow-slate-200 text-sm font-bold"
+                                    >
+                                        <FaPlus /> Add Service
+                                    </button>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-slate-50 border-b border-slate-100">
+                                            <tr>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Service Name</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Description</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider">Price/Rate</th>
+                                                <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-wider text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {extraServices.map((svc) => (
+                                                <tr key={svc.id} className="hover:bg-slate-50 transition">
+                                                    <td className="p-6 font-bold text-slate-800 text-sm">{svc.name}</td>
+                                                    <td className="p-6 text-slate-500 text-sm">{svc.description}</td>
+                                                    <td className="p-6 font-bold text-slate-900">{svc.price}</td>
+                                                    <td className="p-6 text-right flex justify-end gap-2">
+                                                        <button onClick={() => handleOpenExtraModal(svc)} className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"><FaEdit /></button>
+                                                        <button onClick={() => handleDeleteExtra(svc.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><FaTrash /></button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === 'reports' && (
                         <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
-                            <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                            <div className="p-8 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <h2 className="text-xl font-bold text-slate-800">Monthly Financial Reports</h2>
                             </div>
                             <div className="p-8">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                                    <div className="bg-indigo-600 p-8 rounded-[2rem] text-white shadow-xl shadow-indigo-200 relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                                        <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2">Total Revenue</p>
+                                        <h3 className="text-4xl font-black">${history.reduce((acc, tx) => acc + (parseFloat(String(tx.amount || '0').replace(/[^0-9.]/g, '')) || 0), 0).toFixed(2)}</h3>
+                                        <div className="mt-4 flex items-center gap-2 text-xs font-bold bg-white/20 w-fit px-3 py-1 rounded-full border border-white/10">
+                                            <span className="text-emerald-300">↑ 12.5%</span>
+                                            <span className="opacity-60">vs last month</span>
+                                        </div>
+                                    </div>
 
+                                    <div className="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl shadow-slate-200 relative overflow-hidden group">
+                                        <div className="absolute bottom-0 right-0 -mr-8 -mb-8 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Active Customers</p>
+                                        <h3 className="text-4xl font-black">{users.filter(u => u.status === 'Active').length}</h3>
+                                        <div className="mt-4 flex items-center gap-2 text-xs font-bold bg-white/5 w-fit px-3 py-1 rounded-full border border-white/5">
+                                            <span className="text-indigo-400">{users.length}</span>
+                                            <span className="opacity-40 text-slate-500">Total Registered</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden group">
+                                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Total Transactions</p>
+                                        <h3 className="text-4xl font-black text-slate-800">{history.length}</h3>
+
+                                    </div>
+                                </div>
+
+                                <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                    Monthly Breakdown
+                                </h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                                     {(() => {
-
                                         const monthlyData = history.reduce((acc, tx) => {
                                             const date = new Date(tx.date);
                                             const key = date.toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -401,12 +562,11 @@ function AdminDashboard() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100">
-
                                             {history.map((tx, idx) => {
                                                 const date = new Date(tx.date);
                                                 const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
                                                 return (
-                                                    <tr key={idx}>
+                                                    <tr key={idx} className="hover:bg-slate-50 transition">
                                                         <td className="p-4 font-bold text-slate-800">{monthYear}</td>
                                                         <td className="p-4 text-slate-600 font-medium">{tx.user}</td>
                                                         <td className="p-4 font-mono text-emerald-600 font-bold">{tx.amount}</td>
@@ -421,238 +581,152 @@ function AdminDashboard() {
                             </div>
                         </div>
                     )}
+                </div>
 
-                    {activeTab === 'packages' && (
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center">
-                                <h2 className="text-xl font-bold text-slate-800">Internet Packages</h2>
-                                <button
-                                    onClick={() => handleOpenPackageModal()}
-                                    className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30"
-                                >
-                                    <FaPlus /> Add New Package
-                                </button>
+                {/* Package Modal */}
+                {isPackageModalOpen && (
+                    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 className="text-xl font-bold text-slate-800">{editingPackage ? 'Edit Package' : 'Add New Package'}</h3>
+                                <button onClick={() => setIsPackageModalOpen(false)} className="text-slate-400 hover:text-slate-600"><FaTimes /></button>
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {packages.map((pkg) => (
-                                    <div key={pkg.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative">
-                                        {pkg.popular && (
-                                            <span className="absolute top-4 right-4 bg-indigo-100 text-indigo-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
-                                                Popular
-                                            </span>
-                                        )}
-                                        <h3 className="text-lg font-bold text-slate-800 mb-1">{pkg.name}</h3>
-                                        <p className="text-3xl font-extrabold text-indigo-600 mb-4">
-                                            ${pkg.price}<span className="text-sm text-slate-400 font-normal">/mo</span>
-                                        </p>
-                                        <div className="space-y-2 mb-6 text-sm text-slate-600">
-                                            <p className="font-bold flex items-center justify-between">
-                                                Speed <span>{pkg.speed}</span>
-                                            </p>
-                                            <div className="border-t border-slate-100 pt-2">
-                                                <p className="text-xs text-slate-400 mb-2 uppercase tracking-widest font-bold">Features</p>
-                                                <ul className="space-y-1">
-                                                    {pkg.features.map((f, i) => (
-                                                        <li key={i} className="flex items-center gap-2">
-                                                            <div className="w-1 h-1 bg-indigo-500 rounded-full"></div>
-                                                            {f}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleOpenPackageModal(pkg)}
-                                                className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-200 transition text-sm font-bold"
-                                            >
-                                                <FaEdit /> Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeletePackage(pkg.id)}
-                                                className="flex items-center justify-center bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition text-sm"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="pt-10">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-xl font-bold text-slate-800">Additional Services</h2>
-                                    <button
-                                        onClick={() => handleOpenExtraModal()}
-                                        className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 transition shadow-lg"
-                                    >
-                                        <FaPlus /> Add Service
-                                    </button>
+                            <form onSubmit={handleSavePackage} className="p-8 space-y-5">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Package Name</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        value={packageForm.name}
+                                        onChange={(e) => setPackageForm({ ...packageForm, name: e.target.value })}
+                                        placeholder="e.g. Fiber Ultra 100"
+                                    />
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {extraServices.map((svc) => (
-                                        <div key={svc.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                                            <h3 className="text-lg font-bold text-slate-800 mb-1">{svc.name}</h3>
-                                            <p className="text-sm text-slate-500 mb-4">{svc.description}</p>
-                                            <p className="font-bold text-slate-800 mb-6">{svc.price}</p>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => handleOpenExtraModal(svc)}
-                                                    className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-200 transition text-sm font-bold"
-                                                >
-                                                    <FaEdit /> Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteExtra(svc.id)}
-                                                    className="flex items-center justify-center bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition text-sm"
-                                                >
-                                                    <FaTrash />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Package Modal */}
-                    {isPackageModalOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden">
-                                <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                                    <h3 className="text-xl font-bold text-slate-800">
-                                        {editingPackage ? 'Edit Package' : 'Add New Package'}
-                                    </h3>
-                                    <button onClick={() => setIsPackageModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                                        <FaTimes />
-                                    </button>
-                                </div>
-                                <form onSubmit={handleSavePackage} className="p-8 space-y-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Package Name</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Monthly Price ($)</label>
                                         <input
-                                            type="text"
                                             required
-                                            value={packageForm.name}
-                                            onChange={(e) => setPackageForm({ ...packageForm, name: e.target.value })}
-                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                                            placeholder="e.g. Fiber 20Mbps"
+                                            type="number"
+                                            step="0.01"
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                            value={packageForm.price}
+                                            onChange={(e) => setPackageForm({ ...packageForm, price: e.target.value })}
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Price ($)</label>
-                                            <input
-                                                type="number"
-                                                required
-                                                value={packageForm.price}
-                                                onChange={(e) => setPackageForm({ ...packageForm, price: e.target.value })}
-                                                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                                                placeholder="25.00"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Speed</label>
-                                            <input
-                                                type="text"
-                                                required
-                                                value={packageForm.speed}
-                                                onChange={(e) => setPackageForm({ ...packageForm, speed: e.target.value })}
-                                                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                                                placeholder="20 Mbps"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Features (comma separated)</label>
-                                        <textarea
-                                            value={packageForm.features}
-                                            onChange={(e) => setPackageForm({ ...packageForm, features: e.target.value })}
-                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-24 resize-none"
-                                            placeholder="Unlimited Data, Free Router, 24/7 Support"
-                                        ></textarea>
-                                    </div>
-                                    <div className="flex items-center gap-2 py-2">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Speed</label>
                                         <input
-                                            type="checkbox"
-                                            id="popular"
-                                            checked={packageForm.popular}
-                                            onChange={(e) => setPackageForm({ ...packageForm, popular: e.target.checked })}
-                                            className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            required
+                                            type="text"
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                            value={packageForm.speed}
+                                            onChange={(e) => setPackageForm({ ...packageForm, speed: e.target.value })}
+                                            placeholder="e.g. 100 Mbps"
                                         />
-                                        <label htmlFor="popular" className="text-sm font-medium text-slate-700">Mark as Popular</label>
                                     </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Features (comma separated)</label>
+                                    <textarea
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 h-24"
+                                        value={packageForm.features}
+                                        onChange={(e) => setPackageForm({ ...packageForm, features: e.target.value })}
+                                        placeholder="Unlimited Data, 24/7 Support, etc."
+                                    />
+                                </div>
+                                <div className="flex items-center gap-3 py-2">
+                                    <input
+                                        type="checkbox"
+                                        id="popular"
+                                        className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                        checked={packageForm.popular}
+                                        onChange={(e) => setPackageForm({ ...packageForm, popular: e.target.checked })}
+                                    />
+                                    <label htmlFor="popular" className="text-sm font-medium text-slate-700 select-none">Mark as Popular/Recommended</label>
+                                </div>
+                                <div className="pt-4 flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsPackageModalOpen(false)}
+                                        className="flex-1 px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
+                                    >
+                                        Cancel
+                                    </button>
                                     <button
                                         type="submit"
-                                        className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30 mt-4"
+                                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-indigo-200"
                                     >
                                         {editingPackage ? 'Update Package' : 'Create Package'}
                                     </button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Extra Service Modal */}
-                    {isExtraModalOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden">
-                                <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                                    <h3 className="text-xl font-bold text-slate-800">
-                                        {editingExtra ? 'Edit Service' : 'Add New Service'}
-                                    </h3>
-                                    <button onClick={() => setIsExtraModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                                        <FaTimes />
-                                    </button>
                                 </div>
-                                <form onSubmit={handleSaveExtra} className="p-8 space-y-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Service Name</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={extraForm.name}
-                                            onChange={(e) => setExtraForm({ ...extraForm, name: e.target.value })}
-                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                                            placeholder="e.g. Installation"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Description</label>
-                                        <textarea
-                                            required
-                                            value={extraForm.description}
-                                            onChange={(e) => setExtraForm({ ...extraForm, description: e.target.value })}
-                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-20 resize-none"
-                                            placeholder="Professional installation..."
-                                        ></textarea>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Price Label</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            value={extraForm.price}
-                                            onChange={(e) => setExtraForm({ ...extraForm, price: e.target.value })}
-                                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                                            placeholder="e.g. $50 (one-time)"
-                                        />
-                                    </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Extra Service Modal */}
+                {isExtraModalOpen && (
+                    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                <h3 className="text-xl font-bold text-slate-800">{editingExtra ? 'Edit Service' : 'Add New Service'}</h3>
+                                <button onClick={() => setIsExtraModalOpen(false)} className="text-slate-400 hover:text-slate-600"><FaTimes /></button>
+                            </div>
+                            <form onSubmit={handleSaveExtra} className="p-8 space-y-5">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Service Name</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        value={extraForm.name}
+                                        onChange={(e) => setExtraForm({ ...extraForm, name: e.target.value })}
+                                        placeholder="e.g. Standard Installation"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Description</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        value={extraForm.description}
+                                        onChange={(e) => setExtraForm({ ...extraForm, description: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Price/Rate</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                        value={extraForm.price}
+                                        onChange={(e) => setExtraForm({ ...extraForm, price: e.target.value })}
+                                        placeholder="e.g. $50 (one-time) or $5/month"
+                                    />
+                                </div>
+                                <div className="pt-4 flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsExtraModalOpen(false)}
+                                        className="flex-1 px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
+                                    >
+                                        Cancel
+                                    </button>
                                     <button
                                         type="submit"
-                                        className="w-full py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition shadow-lg mt-4"
+                                        className="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-slate-200"
                                     >
                                         {editingExtra ? 'Update Service' : 'Create Service'}
                                     </button>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
                         </div>
-                    )}
+                    </div>
+                )}
 
-
-                </div>
             </main>
         </div>
     );
